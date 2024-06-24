@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Search Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            color: #5D5C61;
+        }
+        #query {
+            width: 300px;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #6D9DC5;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #3A84A0;
+        }
+        #results {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .anime {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: calc(33% - 40px);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .anime:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .anime img {
+            max-width: 120px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .anime h2 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+            text-align: center;
+        }
+        .anime p {
+            margin: 5px 0;
+            color: #555;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search for Anime</h1>
+    <input type="text" id="query" placeholder="Enter anime title">
+    <button onclick="searchAnime()">Search</button>
+    <div id="results"></div>
+
+    <script>
+        function searchAnime() {
+            const query = document.getElementById('query').value;
+            fetch(`https://api.jikan.moe/v4/anime?q=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '';
+                    data.data.forEach(item => {
+                        const anime = document.createElement('div');
+                        anime.className = 'anime';
+
+                        const title = document.createElement('h2');
+                        title.textContent = item.title;
+
+                        const episodes = document.createElement('p');
+                        episodes.textContent = `Episodes: ${item.episodes}`;
+
+                        const synopsis = document.createElement('p');
+                        synopsis.textContent = item.synopsis || 'No synopsis available.';
+
+                        const image = document.createElement('img');
+                        if (item.images.jpg.image_url) {
+                            image.src = item.images.jpg.image_url;
+                        } else {
+                            image.src = 'https://via.placeholder.com/100';
+                        }
+
+                        anime.appendChild(image);
+                        anime.appendChild(title);
+                        anime.appendChild(episodes);
+                        anime.appendChild(synopsis);
+                        resultsDiv.appendChild(anime);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+    </script>
+</body>
+</html>
+
